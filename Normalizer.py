@@ -1,5 +1,6 @@
 import datetime
 import re
+import pyproj
 
 __author__ = 'marcio'
 
@@ -107,3 +108,18 @@ class Normalizer:
     def get_neighborhood(bbl):
         neighborhood = {1: ' Manhattan', 2: ' Bronx', 3: ' Brooklyn', 4: ' Queens', 5: ' Staten Island'}
         return neighborhood[bbl / 1000000000]
+
+    @staticmethod
+    def convert(x, y):
+        """
+        :param x: int x-axis coordinate of point in New York-Long Island State Plane coordinate system
+        :param y: int y-axis coordinate of point in New York-Long Island State Plane coordinate system
+        :rtype : tuple (latitude, longitude)
+        The datum provided by pluto has x for y and vice-versa...
+        NAD 83 / New York Long Island (ft US) (EPSG 2263): The State Plane zone that covers Long Island
+        and New York City is used by all NYC agencies that produce GIS data
+        """
+        state_plane = pyproj.Proj(init='EPSG:2263', preserve_units=True)
+        wgs = pyproj.Proj(proj='latlong', datum='NAD83', ellps='WGS84')
+        lng, lat = pyproj.transform(state_plane, wgs, x, y)
+        return lat, lng
