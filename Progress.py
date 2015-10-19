@@ -1,12 +1,20 @@
-__author__ = 'marcio'
-
 import sys
 
-class Progress:
-    def __init__(self, size):
-        self.size = size
+__author__ = 'marcio'
 
-    def progress(self, val):
+
+class Progress:
+    def __init__(self):
+        self.size = 0
+
+    def set_progress(self, val):
         sys.stdout.flush()
-        sys.stdout.write("\r%d%%" % (int(val)/ int(self.size)))
+        sys.stdout.write("\r%d%%" % (int(val) / int(self.size)))
+        sys.stdout.flush()
+
+    def set_size(self, num):
+        self.size = num
+
+    @staticmethod
+    def flush():
         sys.stdout.flush()

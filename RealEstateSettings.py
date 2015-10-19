@@ -1,5 +1,6 @@
 import time
 from geopy.exc import GeocoderTimedOut, GeocoderServiceError
+import sys
 from CsvManager import CsvManager
 # from DAO import DAO
 from ErrorLog import ErrorLog
@@ -15,6 +16,7 @@ class RealEstateSettings:
         # self.dao = DAO('furman')
         self.geo = GeoSearch()
         self.error_log = ErrorLog(self.__class__.__name__)
+        self.progress = Progress()
 
     # def get_coordinates_db(self):
     #     tuples = self.dao.picky_select_to_geocode()
@@ -40,10 +42,11 @@ class RealEstateSettings:
             raise GeocoderTimedOut
         tuples = CsvManager.read(path1)
         num = CsvManager.get_number_of_rows(path2)
+        print num
         if num == 0:
             CsvManager.write_geo_codes([], path2)
-        progress = Progress(len(tuples))
-        progress.progress(num)
+        self.progress.set_size(len(tuples))
+        self.progress.set_progress(num)
         Normalizer.set_tuple(num, tuples)
         real_estates = []
         while tuples:
@@ -56,7 +59,7 @@ class RealEstateSettings:
                     raise ValueError
                 real_estates.append((bbl, t[1], full_address, lat, lon))
                 num += 1
-                progress.progress(num)
+                self.progress.set_progress(num)
                 time.sleep(1.2)
             except ValueError:
                 self.error_log.open()
@@ -72,6 +75,7 @@ class RealEstateSettings:
                 i += 1
                 RealEstateSettings.get_coordinates_csv(self, path1, path2, i)
             except KeyboardInterrupt:
+                print ""
                 print "Stopped"
                 CsvManager.append_geo_codes(real_estates, path2)
             i = 0
