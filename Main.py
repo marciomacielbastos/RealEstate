@@ -4,4 +4,4 @@ from RealEstateSettings import RealEstateSettings
 __author__ = 'marcio'
 
 res = RealEstateSettings()
-res.get_coordinates_db()
+res.get_coordinates_csv()

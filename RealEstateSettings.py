@@ -1,6 +1,6 @@
 import time
 from CsvManager import CsvManager
-from DAO import DAO
+# from DAO import DAO
 from ErrorLog import ErrorLog
 from GeoSearch import GeoSearch
 from Normalizer import Normalizer
@@ -10,28 +10,28 @@ __author__ = 'marcio'
 
 class RealEstateSettings:
     def __init__(self):
-        self.dao = DAO('furman')
+        # self.dao = DAO('furman')
         self.geo = GeoSearch()
         self.error_log = ErrorLog(self.__class__.__name__)
 
-    def get_coordinates_db(self):
-        tuples = self.dao.picky_select_to_geocode()
-        real_estates = []
-        i = 0
-        for t in tuples:
-            try:
-                bbl = t[0]
-                address = Normalizer.set_address(t[1], bbl)
-                lat, lon, full_address = self.geo.search(address)
-                if lat is None:
-                    raise ValueError
-                real_estates.append((bbl, t[1], full_address, lat, lon))
-                time.sleep(1)
-            except ValueError:
-                self.error_log.open()
-                self.error_log.write(t[1]+", "+str(t[0]))
-                self.error_log.close()
-        CsvManager.store_geo_codes(real_estates)
+    # def get_coordinates_db(self):
+    #     tuples = self.dao.picky_select_to_geocode()
+    #     real_estates = []
+    #     i = 0
+    #     for t in tuples:
+    #         try:
+    #             bbl = t[0]
+    #             address = Normalizer.set_address(t[1], bbl)
+    #             lat, lon, full_address = self.geo.search(address)
+    #             if lat is None:
+    #                 raise ValueError
+    #             real_estates.append((bbl, t[1], full_address, lat, lon))
+    #             time.sleep(1)
+    #         except ValueError:
+    #             self.error_log.open()
+    #             self.error_log.write(t[1]+", "+str(t[0]))
+    #             self.error_log.close()
+    #     CsvManager.store_geo_codes(real_estates)
 
     def get_coordinates_csv(self):
         tuples = CsvManager.read()

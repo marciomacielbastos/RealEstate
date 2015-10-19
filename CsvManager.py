@@ -16,23 +16,29 @@ class CsvManager:
                 csv_out.writerow(row)
 
     @staticmethod
-    def store_geo_codes(data):
-        with open('coordinates.csv', 'w') as out:
+    def store_geo_codes(data, path):
+        with open(path, 'w') as out:
             csv_out = csv.writer(out)
             csv_out.writerow(['bbl', 'raw_address', 'full_address', 'lat', 'long'])
             for row in data:
                 csv_out.writerow(row)
 
     @staticmethod
-    def read():
+    def read(path):
         list_ = []
-        reader = csv.reader(open('/tmp/brooklyn.csv'))
-        for row in reader:
+        file_read = csv.reader(open(path))
+        for row in file_read:
             try:
                 bbl = row[0]
                 address = row[1]
                 list_.append((bbl, address))
             except (KeyError, ValueError) as e:
                 print e.message
-
         return list_
+
+    @staticmethod
+    def get_number_of_rows(path):
+        file_read = csv.reader(open(path))
+        row_count = sum(1 for row in file_read)
+        return row_count
+

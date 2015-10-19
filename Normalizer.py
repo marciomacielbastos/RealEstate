@@ -107,7 +107,7 @@ class Normalizer:
     @staticmethod
     def get_neighborhood(bbl):
         neighborhood = {1: ' Manhattan', 2: ' Bronx', 3: ' Brooklyn', 4: ' Queens', 5: ' Staten Island'}
-        return neighborhood[bbl / 1000000000]
+        return neighborhood[int(bbl) / 1000000000]
 
     @staticmethod
     def convert(x, y):
