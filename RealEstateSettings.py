@@ -68,6 +68,8 @@ class RealEstateSettings:
                 self.error_log.write(e.message)
                 self.error_log.close()
                 print e.message
+                if e.message is 'urlopen error [Errno 111] Connection refused':
+                    time.sleep(1800)
                 i += 1
                 RealEstateSettings.get_coordinates_csv(self, path1, path2, i)
             except KeyboardInterrupt:
