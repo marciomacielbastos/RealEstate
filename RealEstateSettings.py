@@ -5,6 +5,7 @@ from CsvManager import CsvManager
 from ErrorLog import ErrorLog
 from GeoSearch import GeoSearch
 from Normalizer import Normalizer
+from Progress import Progress
 
 __author__ = 'marcio'
 
@@ -41,6 +42,8 @@ class RealEstateSettings:
         num = CsvManager.get_number_of_rows(path2)
         if num == 0:
             CsvManager.write_geo_codes([], path2)
+        progress = Progress(len(tuples))
+        progress.progress(num)
         Normalizer.set_tuple(num, tuples)
         real_estates = []
         while tuples:
@@ -52,15 +55,21 @@ class RealEstateSettings:
                 if lat is None:
                     raise ValueError
                 real_estates.append((bbl, t[1], full_address, lat, lon))
-                time.sleep(1)
+                num += 1
+                progress.progress(num)
+                time.sleep(1.2)
             except ValueError:
                 self.error_log.open()
                 self.error_log.write(t[1]+", "+str(t[0]))
                 self.error_log.close()
             except (GeocoderTimedOut,GeocoderServiceError) as e:
                 CsvManager.append_geo_codes(real_estates, path2)
+                self.error_log.open()
+                self.error_log.write(e.message)
+                self.error_log.close()
+                print e.message
                 i += 1
-                RealEstateSettings.get_coordinates_csv(path1, path2, i)
+                RealEstateSettings.get_coordinates_csv(self, path1, path2, i)
             except KeyboardInterrupt:
                 print "Stopped"
                 CsvManager.append_geo_codes(real_estates, path2)
