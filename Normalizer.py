@@ -123,3 +123,8 @@ class Normalizer:
         wgs = pyproj.Proj(proj='latlong', datum='NAD83', ellps='WGS84')
         lng, lat = pyproj.transform(state_plane, wgs, x, y)
         return lat, lng
+
+    @staticmethod
+    def set_tuple(i, tuple):
+        for j in xrange(i):
+            tuple.pop(0)

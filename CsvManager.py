@@ -8,15 +8,15 @@ class CsvManager:
         pass
 
     @staticmethod
-    def store(data):
-        with open('acris2.csv', 'w') as out:
+    def store(data, path):
+        with open(path, 'w') as out:
             csv_out = csv.writer(out)
             csv_out.writerow(['lat', 'long', 'start_date', 'end_date', 'price'])
             for row in data:
                 csv_out.writerow(row)
 
     @staticmethod
-    def store_geo_codes(data, path):
+    def write_geo_codes(data, path):
         with open(path, 'w') as out:
             csv_out = csv.writer(out)
             csv_out.writerow(['bbl', 'raw_address', 'full_address', 'lat', 'long'])
@@ -38,7 +38,18 @@ class CsvManager:
 
     @staticmethod
     def get_number_of_rows(path):
-        file_read = csv.reader(open(path))
-        row_count = sum(1 for row in file_read)
-        return row_count
+        try:
+            file_read = csv.reader(open(path))
+            row_count = sum(1 for row in file_read)
+            return row_count
+        except IOError:
+            return 0
+
+    @staticmethod
+    def append_geo_codes(data, path):
+        with open(path, 'a') as out:
+            csv_out = csv.writer(out)
+            for row in data:
+                csv_out.writerow(row)
+
 
