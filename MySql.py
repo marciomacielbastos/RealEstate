@@ -1,4 +1,4 @@
-from _mysql import MySQLError
+# from _mysql import MySQLError
 import MySQLdb
 from ConnectionFactory import ConnectionFactory
 
