@@ -40,7 +40,7 @@ class RealEstateSettings:
         tuples = CsvManager.read(path1)
         num = CsvManager.get_number_of_rows(path2)
         if num == 0:
-            CsvManager.write_geo_codes([], path1)
+            CsvManager.write_geo_codes([], path2)
         Normalizer.set_tuple(num, tuples)
         real_estates = []
         while tuples:
@@ -63,5 +63,6 @@ class RealEstateSettings:
                 RealEstateSettings.get_coordinates_csv(path1, path2, i)
             except KeyboardInterrupt:
                 print "Stopped"
+                CsvManager.append_geo_codes(real_estates, path2)
             i = 0
         CsvManager.append_geo_codes(real_estates, path2)
