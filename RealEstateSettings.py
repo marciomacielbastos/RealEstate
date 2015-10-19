@@ -46,7 +46,7 @@ class RealEstateSettings:
         if num == 0:
             CsvManager.write_geo_codes([], path2)
         self.progress.set_size(len(tuples))
-        self.progress.set_progress(num)
+        self.progress.update_progress(num)
         Normalizer.set_tuple(num, tuples)
         real_estates = []
         while tuples:
@@ -59,19 +59,19 @@ class RealEstateSettings:
                     raise ValueError
                 real_estates.append((bbl, t[1], full_address, lat, lon))
                 num += 1
-                self.progress.set_progress(num)
+                self.progress.update_progress(num)
                 time.sleep(1.2)
             except ValueError:
                 self.error_log.open()
                 self.error_log.write(t[1]+", "+str(t[0]))
                 self.error_log.close()
-            except (GeocoderTimedOut,GeocoderServiceError) as e:
+            except (GeocoderTimedOut, GeocoderServiceError) as e:
                 CsvManager.append_geo_codes(real_estates, path2)
                 self.error_log.open()
                 self.error_log.write(e.message)
                 self.error_log.close()
                 if '[Errno 111]' in e.message:
-                    time.sleep(1800)
+                    time.sleep(4000)
                 i += 1
                 RealEstateSettings.get_coordinates_csv(self, path1, path2, i)
             except KeyboardInterrupt:

@@ -12,9 +12,10 @@ class Progress:
         sys.stdout.write("\r%d%%" % (int(val) / int(self.size)))
         sys.stdout.flush()
 
+    def update_progress(self, progress):
+        prog = (progress * 100) / self.size
+        sys.stdout.write('\r[{0}] {1}%'.format('#' * prog, prog))
+        sys.stdout.flush()
+
     def set_size(self, num):
         self.size = num
-
-    @staticmethod
-    def flush():
-        sys.stdout.flush()
