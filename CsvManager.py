@@ -26,12 +26,10 @@ class CsvManager:
     @staticmethod
     def read(path):
         list_ = []
-        file_read = csv.reader(open(path))
+        file_read = csv.reader(open(path, 'rU'))
         for row in file_read:
             try:
-                bbl = row[0]
-                address = row[1]
-                list_.append((bbl, address))
+                list_.append((row[0], row[1], row[2], row[3], row[4], row[5], row[6]))
             except (KeyError, ValueError) as e:
                 print e.message
         return list_

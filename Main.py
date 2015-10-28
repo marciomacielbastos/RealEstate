@@ -6,4 +6,5 @@ from RealEstateSettings import RealEstateSettings
 __author__ = 'marcio'
 
 res = RealEstateSettings()
-res.get_coordinates_csv('/home/marcio/marcio/RealEstate/boroughs/brooklyn.csv', 'coord_brooklyn.csv')
+res.fix_acris('/tmp/acris_output.csv', '/home/marcio/marcio/acris.csv')
+
