@@ -1,7 +1,6 @@
 import time
 from BingGeocode import BingGeocode
 from CsvManager import CsvManager
-# from DAO import DAO
 from DAOPsql import DAOPsql
 from ErrorLog import ErrorLog
 from GeoSearch import GeoSearch
@@ -16,30 +15,12 @@ __author__ = 'marcio'
 
 
 class RealEstateSettings:
+
     def __init__(self):
         dao = DAOPsql('furman')
         self.geo = GeoSearch(dao)
         self.error_log = ErrorLog(self.__class__.__name__)
         self.progress = Progress()
-
-    # def get_coordinates_db(self):
-    #     tuples = self.dao.picky_select_to_geocode()
-    #     real_estates = []
-    #     i = 0
-    #     for t in tuples:
-    #         try:
-    #             bbl = t[0]
-    #             address = Normalizer.set_address(t[1], bbl)
-    #             lat, lon, full_address = self.geo.search(address)
-    #             if lat is None:
-    #                 raise ValueError
-    #             real_estates.append((bbl, t[1], full_address, lat, lon))
-    #             time.sleep(1)
-    #         except ValueError:
-    #             self.error_log.open()
-    #             self.error_log.write(t[1]+", "+str(t[0]))
-    #             self.error_log.close()
-    #     CsvManager.store_geo_codes(real_estates)
 
     def fix_acris(self,  path1, path2):
         tuples = CsvManager.read(path1)
@@ -97,11 +78,11 @@ class RealEstateSettings:
         return tuples
 
     def build_geocodings(self):
-        nominatim = NominatimGeocode(self.progress, self.error_log)
-        google = GoogleGeocode(self.progress, self.error_log)
-        opencage = OpenCageGeocode(self.progress, self.error_log)
-        bing = BingGeocode(self.progress, self.error_log)
-        tiger = TIGERGeocode(self.progress, self.error_log)
+        nominatim = NominatimGeocode(self.progress, self.error_log, self.geo)
+        google = GoogleGeocode(self.progress, self.error_log, self.geo)
+        opencage = OpenCageGeocode(self.progress, self.error_log, self.geo)
+        bing = BingGeocode(self.progress, self.error_log, self.geo)
+        tiger = TIGERGeocode(self.progress, self.error_log, self.geo)
         return nominatim, google, opencage, bing, tiger
 
     def search_lat_long(self, path1, path2):
@@ -119,19 +100,22 @@ class RealEstateSettings:
             elif num == -2:
                 i = 0
                 while i < 3:
-                    print re
                     time.sleep(4000)
                     re, num = self.geocode_process(real_estates, t, nominatim)
                     if num > 0:
                         continue
                     if num == -2:
                         i += 1
+                    if num == -3:
+                        CsvManager.append_geo_codes(real_estates, path2)
+                        return
                 if num < 0:
                     CsvManager.append_geo_codes(real_estates, path2)
-                    break
+                    return num
             elif num == -3:
                 print re
                 CsvManager.append_geo_codes(real_estates, path2)
+                return num
             if count % 100 == 0:
                 for i in range(3):
                     t = tuples.pop(0)
@@ -145,6 +129,7 @@ class RealEstateSettings:
                         self.geocode_process(real_estates, t, opencage)
                         time.sleep(3)
             count += 1
+        CsvManager.append_geo_codes(real_estates, path2)
 
     def geocode_process(self, real_estates, t, geocode):
         re, num = geocode.get_coordinates(t)
