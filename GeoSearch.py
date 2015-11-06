@@ -1,7 +1,6 @@
 from geopy.exc import GeocoderTimedOut
 from geopy.geocoders import Nominatim
 from geopy.geocoders import OpenMapQuest
-from omgeo import Geocoder
 from Normalizer import Normalizer
 
 __author__ = 'marcio'
@@ -9,13 +8,13 @@ __author__ = 'marcio'
 
 class GeoSearch:
     def __init__(self, dao=None):
-        self.geolocator_n = Nominatim()
+        self.geolocator_n = None
         self.geolocator_omq = OpenMapQuest()
         self.dao = dao
-        self.g = Geocoder()
 
     def search_nominatim(self, address):
         try:
+	    self.geolocator_nominatim = Nominatim(proxies={'http':self.get_proxy()})
             location = self.geolocator_n.geocode(address, timeout=20)
             if location:
                 lat = location.latitude
@@ -59,3 +58,12 @@ class GeoSearch:
             if zip3dig in zips:
                 return r[0], r[1]
         return None
+
+    def get_proxy(self):
+        proxies = ['durianproxy.gq', 'proxyrocket.org', 'apricotproxy.gq',
+                   'technoproxy.cf', 'mawoop.ml', 'proxyfree.party', 'accessproxy.org',
+                   'proxyeuro.pw', 'zqal.xyz', 'bukus.ga', 'popeyeprox.info', 'b2bproxy.cf',
+                   'buzy.ml', 'limeproxy.gq', 'web.proxygogo.info', 'broccoliproxy.gq',
+                   'xyzproxy.gq', 'franceproxy.pw', 'ispvpn.com'
+                   ]
+        return proxies[randint(0,len(proxies)-1)]
