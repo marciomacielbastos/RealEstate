@@ -29,7 +29,7 @@ class CsvManager:
         file_read = csv.reader(open(path, 'rU'))
         for row in file_read:
             try:
-                list_.append((row[0], row[1], row[2], row[3], row[4], row[5], row[6]))
+                list_.append((row[0], row[1]))
             except (KeyError, ValueError) as e:
                 print e.message
         return list_
@@ -50,4 +50,20 @@ class CsvManager:
             for row in data:
                 csv_out.writerow(row)
 
+    @staticmethod
+    def write_progress(num):
+        f = open('progress', 'w+')
+        f.write(str(num))
+        f.close()
 
+    @staticmethod
+    def read_progress():
+        try:
+            f = open('progress', 'r+')
+            num = int(f.read())
+            f.close()
+            return num
+        except IOError:
+            return 0
+        except ValueError:
+            print 0

@@ -1,6 +1,5 @@
-from GeoSearch import GeoSearch
+from CsvManager import CsvManager
 from Normalizer import Normalizer
-from RealEstateSettings import RealEstateSettings
 
 __author__ = 'marcio'
 
@@ -18,8 +17,8 @@ class TIGERGeocode:
             lon, lat, full_address = self.geo.search_dao(address, t[0])
             if lat is None:
                 raise ValueError
-            num = RealEstateSettings.read_progress()+1
-            RealEstateSettings.write_progress(num)
+            num = CsvManager.read_progress()+1
+            CsvManager.write_progress(num)
             return (bbl, t[1], full_address, long, lat, 4), num
         except ValueError:
             self.error_log.open()

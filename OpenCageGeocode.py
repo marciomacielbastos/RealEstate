@@ -1,7 +1,6 @@
 from geopy.exc import GeocoderTimedOut, GeocoderServiceError
-from GeoSearch import GeoSearch
+from CsvManager import CsvManager
 from Normalizer import Normalizer
-from RealEstateSettings import RealEstateSettings
 
 __author__ = 'marcio'
 
@@ -20,8 +19,8 @@ class OpenCageGeocode:
             print lat, lon, full_address
             if lat is None:
                 raise ValueError
-            num = RealEstateSettings.read_progress()+1
-            RealEstateSettings.write_progress(num)
+            num = CsvManager.read_progress()+1
+            CsvManager.write_progress(num)
             return (bbl, t[1], full_address, long, lat, 1), num
         except ValueError:
             self.error_log.open()

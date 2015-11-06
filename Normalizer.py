@@ -64,8 +64,19 @@ class Normalizer:
         return cooked_address
 
     @staticmethod
-    def tokenize_elements(address):
+    def first_replaces(address):
+        d = {'FIRST': '1ST', 'SECOND': '2ND', 'THIRD': '3RD',
+             'FOUTH': '4TH', 'FIFTH': '5TH', 'SIXTH': '6TH',
+             'SEVENTH': '7TH', 'EIGHTH': '8TH', 'NINTH': '9TH',
+             'TENTH': '10TH', 'ELEVENTH': '11TH'}
         address = address.replace(u'.', u' ')
+        for i in d.keys():
+            if i in address:
+                address = address.replace(i, d[i])
+        return address
+    @staticmethod
+    def tokenize_elements(address):
+        address = Normalizer.first_replaces(address)
         address = re.sub(u'\s\s+', u' ', address)
         adrs = re.findall(ur'[0-9]+\-*[0-9]*\s*\w*\s+\d+\s*\w+\s*\w*', address, re.I | re.U)
         if adrs:

@@ -6,5 +6,5 @@ from RealEstateSettings import RealEstateSettings
 __author__ = 'marcio'
 
 res = RealEstateSettings()
-res.fix_acris('/tmp/acris_output.csv', '/home/marcio/marcio/acris.csv')
+res.search_lat_long('/home/marcio/marcio/boroughs/manhattan.csv', '/home/marcio/marcio/manhattan.csv')
 

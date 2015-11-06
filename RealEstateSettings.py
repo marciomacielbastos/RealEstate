@@ -49,29 +49,13 @@ class RealEstateSettings:
                 CsvManager.append_geo_codes(real_estates, path2)
         CsvManager.append_geo_codes(real_estates, path2)
 
-    @staticmethod
-    def write_progress(num):
-        f = open('progress', 'w+')
-        f.write(num)
-        f.close()
-
-    @staticmethod
-    def read_progress():
-        try:
-            f = open('progress', 'r+')
-            num = int(f.read())
-            f.close()
-            return num
-        except IOError:
-            return 0
-
     def preprocess(self, path1, path2):
         tuples = CsvManager.read(path1)
-        num = self.read_progress()
+        num = CsvManager.read_progress()
         print num
         if num == 0:
             CsvManager.write_geo_codes([], path2)
-            self.write_progress(0)
+            CsvManager.write_progress('0')
         self.progress.set_size(len(tuples))
         self.progress.update_progress(num)
         Normalizer.set_tuple(num, tuples)
@@ -95,8 +79,8 @@ class RealEstateSettings:
             re, num = self.geocode_process(real_estates, t, nominatim)
             if num == -1:
                 re, num = self.geocode_process(real_estates, t, bing)
-                if num < 0:
-                    self.geocode_process(real_estates, t, tiger)
+                # if num < 0:
+                #     self.geocode_process(real_estates, t, tiger)
             elif num == -2:
                 i = 0
                 while i < 3:
