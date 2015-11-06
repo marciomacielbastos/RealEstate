@@ -29,6 +29,23 @@ class GeoSearch:
         except (GeocoderTimedOut, AttributeError):
             return None, None
 
+    def search_google(self, address):
+        try:
+	    self.geolocator_nominatim = Nominatim(proxies={'http':self.get_proxy()})
+            location = self.geolocator_n.geocode(address, timeout=20)
+            if location:
+                lat = location.latitude
+                long = location.longitude
+                full_address = location.address
+                if 40.485808 < lat < 40.917691 and -73.699206 > long > -74.260380:
+                    return lat, long, full_address
+                else:
+                    return None, None
+            else:
+                return None, None
+        except (GeocoderTimedOut, AttributeError):
+            return None, None
+
     def search_openmapquest(self, address):
         try:
             location = self.geolocator_omq.geocode(address, timeout=20)
