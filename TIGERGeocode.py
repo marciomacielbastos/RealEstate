@@ -17,10 +17,9 @@ class TIGERGeocode:
             bbl = t[0]
             address = Normalizer.set_address(t[1])
             lon, lat, full_address = self.geo.search_dao(address, t[0])
-            TIGERGeocode.print_status(" TIGER")
-            time.sleep(1)
             if lat is None:
                 raise ValueError
+            TIGERGeocode.print_status(" TIGER")
             num = CsvManager.read_progress()+1
             CsvManager.write_progress(num)
             return (bbl, t[1], full_address, lon, lat, 4), num
@@ -29,7 +28,6 @@ class TIGERGeocode:
             self.error_log.write(t[1]+", "+str(t[0]))
             self.error_log.close()
             TIGERGeocode.print_status(" Lat, Long not found ")
-            time.sleep(1)
             return -1, False
 
         except KeyboardInterrupt:
@@ -45,4 +43,5 @@ class TIGERGeocode:
     def print_status(string):
         sys.stdout.flush()
         sys.stdout.write(string)
+        time.sleep(1)
         sys.stdout.flush()

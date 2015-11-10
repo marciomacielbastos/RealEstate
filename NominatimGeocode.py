@@ -51,4 +51,5 @@ class NominatimGeocode:
     def print_status(string):
         sys.stdout.flush()
         sys.stdout.write(string)
+        time.sleep(1)
         sys.stdout.flush()

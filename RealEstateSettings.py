@@ -77,7 +77,7 @@ class RealEstateSettings:
         nominatim, google, opencage, bing, tiger = self.build_geocodings()
         while tuples:
             t = tuples.pop(0)
-            status, found = self.geocode_process(t, tiger)
+            status, found = self.geocode_process(t, nominatim)
             if not found:
                 if status == -1:
                     status, found = self.geocode_process(t, bing)
@@ -114,4 +114,7 @@ class RealEstateSettings:
         if num:
             CsvManager.append_geo_codes([re], self.output)
             self.progress.update_progress(num)
+        else:
+            val = CsvManager.read_progress()
+            self.progress.update_progress(val+1)
         return re, num

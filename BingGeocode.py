@@ -18,10 +18,9 @@ class BingGeocode:
             bbl = t[0]
             address = Normalizer.set_address(t[1], bbl)
             lat, lon, full_address = self.geo.search_nominatim(address)
-            BingGeocode.print_status(" Bing")
-            time.sleep(1)
             if lat is None:
                 raise ValueError
+            BingGeocode.print_status(" Bing")
             num = CsvManager.read_progress()+1
             CsvManager.write_progress(num)
             return (bbl, t[1], full_address, lon, lat, 1), num
@@ -52,4 +51,5 @@ class BingGeocode:
     def print_status(string):
         sys.stdout.flush()
         sys.stdout.write(string)
+        time.sleep(1)
         sys.stdout.flush()

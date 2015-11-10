@@ -18,10 +18,9 @@ class GoogleGeocode:
             bbl = t[0]
             address = Normalizer.set_address(t[1], bbl)
             lat, lon, full_address = self.geo.search_nominatim(address)
-            GoogleGeocode.print_status(" Google")
-            time.sleep(1)
             if lat is None:
                 raise ValueError
+            GoogleGeocode.print_status(" Google")
             num = CsvManager.read_progress()+1
             CsvManager.write_progress(num)
             return (bbl, t[1], full_address, lon, lat, 1), num
@@ -52,4 +51,5 @@ class GoogleGeocode:
     def print_status(string):
         sys.stdout.flush()
         sys.stdout.write(string)
+        time.sleep(1)
         sys.stdout.flush()
