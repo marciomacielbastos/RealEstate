@@ -106,17 +106,17 @@ class Normalizer:
                             address = re.sub(ur'(' + inst[0] + ur')(' + inst[1] + ur')'
                                              ur'(' + inst[2] + ur')(' + inst[3] + ur')',
                                              inst[0] + inst[1].replace(u' ', u'') +
-                                             Normalizer.street_order(inst[1]) + dim[inst[2].lower()] +
+                                             Normalizer.set_order(inst[1]) + dim[inst[2].lower()] +
                                              dim[inst[3].replace(u' ', u'')], address)
                     else:
                         if inst[2] in dim.keys():
                             address = re.sub(ur'(' + inst[0] + ur')(' + inst[1] + ur')(' + inst[2] + ur')',
-                                             inst[0] + inst[1].replace(u' ', u'') + Normalizer.street_order(inst[1]) +
+                                             inst[0] + inst[1].replace(u' ', u'') + Normalizer.set_order(inst[1]) +
                                              dim[inst[2]], address)
                 else:
                     address = re.sub(ur'(' + inst[0] + ur')(' + inst[1] + ur')(' + inst[2] + ur')',
                                      inst[0] + inst[1].replace(u' ', u'') +
-                                     Normalizer.street_order(inst[1]) + inst[2], address)
+                                     Normalizer.set_order(inst[1]) + inst[2], address)
             elif inst[1] in dim.keys() or inst[1].lower() in dim.keys():
                 address = re.sub(ur'(' + inst[0] + ur')(' + inst[1] + ur')',
                                  inst[0] + dim[inst[1]], address)
@@ -128,7 +128,7 @@ class Normalizer:
             print inst
 
     @staticmethod
-    def street_order(nmbr):
+    def set_order(nmbr):
         try:
             dic = {1: u'st ', 2: u'nd ', 3: u'rd '}
             n = nmbr.replace(u' ', u'')[-1]

@@ -97,7 +97,7 @@ class GeoSearch:
 
     @staticmethod
     def verify_address(adress, results, borough):
-        zips = Normalizer.select_zipcode_class(borough)
+        zips = Normalizer.select_zipcode_class(Normalizer.get_neighborhood(borough))
         for r in results:
             zip3dig = int(r[2]) / 100
             if zip3dig in zips:

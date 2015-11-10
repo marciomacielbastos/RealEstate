@@ -16,15 +16,17 @@ __author__ = 'marcio'
 
 class RealEstateSettings:
 
-    def __init__(self):
+    def __init__(self, inputdata, outputdata):
         dao = DAOPsql('furman')
         self.geo = GeoSearch(dao)
         self.error_log = ErrorLog(self.__class__.__name__)
         self.progress = Progress()
+        self.input = inputdata
+        self.output = outputdata
 
-    def fix_acris(self,  path1, path2):
-        tuples = CsvManager.read(path1)
-        num = CsvManager.get_number_of_rows(path2)
+    def fix_acris(self):
+        tuples = CsvManager.read(self.input)
+        num = CsvManager.get_number_of_rows(self.output)
         self.progress.set_size(len(tuples))
         self.progress.update_progress(num)
         real_estates = []
@@ -46,15 +48,15 @@ class RealEstateSettings:
             except KeyboardInterrupt:
                 print ""
                 print "Stopped"
-                CsvManager.append_geo_codes(real_estates, path2)
-        CsvManager.append_geo_codes(real_estates, path2)
+                CsvManager.append_geo_codes(real_estates, self.output)
+        CsvManager.append_geo_codes(real_estates, self.output)
 
-    def preprocess(self, path1, path2):
-        tuples = CsvManager.read(path1)
+    def preprocess(self):
+        tuples = CsvManager.read(self.input)
         num = CsvManager.read_progress()
         print num
         if num == 0:
-            CsvManager.write_geo_codes([], path2)
+            CsvManager.write_geo_codes([], self.output)
             CsvManager.write_progress('0')
         self.progress.set_size(len(tuples))
         self.progress.update_progress(num)
@@ -69,55 +71,47 @@ class RealEstateSettings:
         tiger = TIGERGeocode(self.progress, self.error_log, self.geo)
         return nominatim, google, opencage, bing, tiger
 
-    def search_lat_long(self, path1, path2):
-        tuples = self.preprocess(path1, path2)
-        real_estates = []
+    def search_lat_long(self):
+        tuples = self.preprocess()
         count = 1
         nominatim, google, opencage, bing, tiger = self.build_geocodings()
         while tuples:
             t = tuples.pop(0)
-            re, num = self.geocode_process(real_estates, t, nominatim)
-            if num == -1:
-                re, num = self.geocode_process(real_estates, t, bing)
-                # if num < 0:
-                #     self.geocode_process(real_estates, t, tiger)
-            elif num == -2:
-                i = 0
-                while i < 3:
-                    time.sleep(4000)
-                    re, num = self.geocode_process(real_estates, t, nominatim)
-                    if num > 0:
-                        continue
-                    if num == -2:
-                        i += 1
-                    if num == -3:
-                        CsvManager.append_geo_codes(real_estates, path2)
-                        return
-                if num < 0:
-                    CsvManager.append_geo_codes(real_estates, path2)
-                    return num
-            elif num == -3:
-                print re
-                CsvManager.append_geo_codes(real_estates, path2)
-                return num
-            if count % 100 == 0:
-                for i in range(3):
-                    t = tuples.pop(0)
-                    re, num = self.geocode_process(real_estates, t, google)
-                    time.sleep(3)
-                    if num < 0:
-                        self.geocode_process(real_estates, t, opencage)
-                        time.sleep(3)
-                    else:
+            status, found = self.geocode_process(t, tiger)
+            if not found:
+                if status == -1:
+                    status, found = self.geocode_process(t, bing)
+                    if not found and status == -1:
+                        self.geocode_process(t, tiger)
+                elif status == -2:
+                    i = 1
+                    while i < 3:
+                        print "Waiting 45' for the "+Normalizer.set_order(str(i))+" time"
+                        time.sleep(2700)
+                        status, found = self.geocode_process(t, nominatim)
+                        if found:
+                            continue
+                        elif status == -2:
+                            i += 1
+                        elif status == -3:
+                            return
+                if count % 100 == 0:
+                    for i in range(3):
                         t = tuples.pop(0)
-                        self.geocode_process(real_estates, t, opencage)
+                        status, found = self.geocode_process(t, google)
                         time.sleep(3)
+                        if not found:
+                            self.geocode_process(t, opencage)
+                            time.sleep(3)
+                        else:
+                            t = tuples.pop(0)
+                            self.geocode_process(t, opencage)
+                            time.sleep(3)
             count += 1
-        CsvManager.append_geo_codes(real_estates, path2)
 
-    def geocode_process(self, real_estates, t, geocode):
+    def geocode_process(self, t, geocode):
         re, num = geocode.get_coordinates(t)
-        if num >= 0:
-            real_estates.append(re)
-        self.progress.update_progress(num)
+        if num:
+            CsvManager.append_geo_codes([re], self.output)
+            self.progress.update_progress(num)
         return re, num
