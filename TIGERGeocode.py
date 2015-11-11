@@ -32,7 +32,6 @@ class TIGERGeocode:
 
         except KeyboardInterrupt:
             TIGERGeocode.print_status(" Stopped ")
-            time.sleep(1)
             return -3, False
 
     @staticmethod

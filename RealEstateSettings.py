@@ -25,10 +25,7 @@ class RealEstateSettings:
         self.output = outputdata
 
     def fix_acris(self):
-        tuples = CsvManager.read(self.input)
-        num = CsvManager.get_number_of_rows(self.output)
-        self.progress.set_size(len(tuples))
-        self.progress.update_progress(num)
+        tuples = self.preprocess()
         real_estates = []
         while tuples:
             try:
@@ -39,8 +36,6 @@ class RealEstateSettings:
                 date = Normalizer.set_str_to_epoch(t[5])
                 price = t[6]
                 real_estates.append((bbl, address, date, price))
-                num += 1
-                self.progress.update_progress(num)
             except ValueError:
                 self.error_log.open()
                 self.error_log.write(t[1]+", "+str(t[0]))
@@ -55,9 +50,9 @@ class RealEstateSettings:
         tuples = CsvManager.read(self.input)
         num = CsvManager.read_progress()
         print num
-        if num == 0:
-            CsvManager.write_geo_codes([], self.output)
-            CsvManager.write_progress('0')
+        # if num == 0:
+            # CsvManager.write_geo_codes([], self.output)
+            # CsvManager.write_progress('0')
         self.progress.set_size(len(tuples))
         self.progress.update_progress(num)
         Normalizer.set_tuple(num, tuples)

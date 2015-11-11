@@ -187,7 +187,11 @@ class Normalizer:
 
     @staticmethod
     def set_bbl(bourough, block, lot):
-        return int(bourough) * 1000000000 + int(block) * 10000 + int(lot)
+        try:
+            bourough.replace('"','')
+            return int(bourough) * 1000000000 + int(block) * 10000 + int(lot)
+        except ValueError:
+            print bourough, block, lot
 
     @staticmethod
     def epoch_to_datetime(epoch):
