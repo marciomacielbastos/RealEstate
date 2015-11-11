@@ -15,8 +15,8 @@ class NominatimGeocode:
 
     def get_coordinates(self, t):
         try:
-            bbl = t[0]
-            address = Normalizer.set_address(t[1], bbl)
+            # bbl = t[0]
+            address = t[1]# Normalizer.set_address(t[1], bbl)
             lat, lon, full_address = self.geo.search_nominatim(address)
             time.sleep(0.3)
             if lat is None:

@@ -50,9 +50,9 @@ class RealEstateSettings:
         tuples = CsvManager.read(self.input)
         num = CsvManager.read_progress()
         print num
-        # if num == 0:
-            # CsvManager.write_geo_codes([], self.output)
-            # CsvManager.write_progress('0')
+        if num == 0:
+            CsvManager.write_geo_codes([], self.output)
+            CsvManager.write_progress('0')
         self.progress.set_size(len(tuples))
         self.progress.update_progress(num)
         Normalizer.set_tuple(num, tuples)

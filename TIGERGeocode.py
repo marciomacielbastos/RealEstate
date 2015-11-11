@@ -14,8 +14,8 @@ class TIGERGeocode:
 
     def get_coordinates(self, t):
         try:
-            bbl = t[0]
-            address = Normalizer.set_address(t[1])
+            # bbl = t[0]
+            address = t[1]# Normalizer.set_address(t[1], bbl)
             lon, lat, full_address = self.geo.search_dao(address, t[0])
             if lat is None:
                 raise ValueError

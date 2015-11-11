@@ -15,9 +15,9 @@ class OpenCageGeocode:
 
     def get_coordinates(self, t):
         try:
-            bbl = t[0]
-            address = Normalizer.set_address(t[1], bbl)
-            lat, lon, full_address = self.geo.search_nominatim(address)
+            # bbl = t[0]
+            address = t[1]# Normalizer.set_address(t[1], bbl)
+            lat, lon, full_address = self.geo.search_opencage(address)
             if lat is None:
                 raise ValueError
             OpenCageGeocode.print_status(" OpenCage")

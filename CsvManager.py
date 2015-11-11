@@ -29,7 +29,7 @@ class CsvManager:
         file_read = csv.reader(open(path, 'rU'))
         for row in file_read:
             try:
-                list_.append((row[0], row[1], row[2], row[3], row[4], row[5], row[6]))
+                list_.append((row[0], row[1]))
             except (KeyError, ValueError, IndexError) as e:
                 print e.message
                 return
