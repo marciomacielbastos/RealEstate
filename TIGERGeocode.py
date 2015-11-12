@@ -14,7 +14,7 @@ class TIGERGeocode:
 
     def get_coordinates(self, t):
         try:
-            # bbl = t[0]
+            bbl = t[0]
             address = t[1]# Normalizer.set_address(t[1], bbl)
             lon, lat, full_address = self.geo.search_dao(address, t[0])
             if lat is None:
@@ -22,7 +22,7 @@ class TIGERGeocode:
             TIGERGeocode.print_status(" TIGER")
             num = CsvManager.read_progress()+1
             CsvManager.write_progress(num)
-            return (bbl, t[1], full_address, lon, lat, 4), num
+            return (bbl, t[1], full_address.encode('utf-8'), lon, lat, 4), num
         except ValueError:
             self.error_log.open()
             self.error_log.write(t[1]+", "+str(t[0]))

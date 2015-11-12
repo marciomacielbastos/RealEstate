@@ -15,7 +15,7 @@ class BingGeocode:
 
     def get_coordinates(self, t):
         try:
-            # bbl = t[0]
+            bbl = t[0]
             address = t[1]# Normalizer.set_address(t[1], bbl)
             lat, lon, full_address = self.geo.search_bing(address)
             if lat is None:
@@ -23,7 +23,7 @@ class BingGeocode:
             BingGeocode.print_status(" Bing")
             num = CsvManager.read_progress()+1
             CsvManager.write_progress(num)
-            return (bbl, t[1], full_address, lon, lat, 1), num
+            return (bbl, t[1], full_address.encode('utf-8'), lon, lat, 1), num
         except ValueError:
             self.error_log.open()
             self.error_log.write(t[1]+", "+str(t[0]))

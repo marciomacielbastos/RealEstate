@@ -46,10 +46,13 @@ class CsvManager:
 
     @staticmethod
     def append_geo_codes(data, path):
-        with open(path, 'a') as out:
-            csv_out = csv.writer(out)
-            for row in data:
-                csv_out.writerow(row)
+        try:
+            with open(path, 'a') as out:
+                csv_out = csv.writer(out)
+                for row in data:
+                    csv_out.writerow(row)
+        except UnicodeEncodeError as e:
+            print row
 
     @staticmethod
     def write_progress(num):
