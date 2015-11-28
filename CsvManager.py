@@ -45,14 +45,14 @@ class CsvManager:
             return 0
 
     @staticmethod
-    def append_geo_codes(data, path):
+    def append(data, path):
         try:
             with open(path, 'a') as out:
                 csv_out = csv.writer(out)
                 for row in data:
                     csv_out.writerow(row)
         except UnicodeEncodeError as e:
-            print row
+            pass
 
     @staticmethod
     def write_progress(num):

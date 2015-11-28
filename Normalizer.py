@@ -74,6 +74,7 @@ class Normalizer:
             if i in address:
                 address = address.replace(i, d[i])
         return address
+
     @staticmethod
     def tokenize_elements(address):
         address = Normalizer.first_replaces(address)
@@ -104,7 +105,8 @@ class Normalizer:
                     if len(inst) == 4:
                         if inst[3] in dim.keys():
                             address = re.sub(ur'(' + inst[0] + ur')(' + inst[1] + ur')'
-                                             ur'(' + inst[2] + ur')(' + inst[3] + ur')',
+                                                                                  ur'(' + inst[2] + ur')(' + inst[
+                                                 3] + ur')',
                                              inst[0] + inst[1].replace(u' ', u'') +
                                              Normalizer.set_order(inst[1]) + dim[inst[2].lower()] +
                                              dim[inst[3].replace(u' ', u'')], address)
@@ -188,7 +190,7 @@ class Normalizer:
     @staticmethod
     def set_bbl(bourough, block, lot):
         try:
-            bourough.replace('"','')
+            bourough.replace('"', '')
             return int(bourough) * 1000000000 + int(block) * 10000 + int(lot)
         except ValueError:
             print bourough, block, lot
