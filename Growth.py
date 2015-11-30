@@ -4,7 +4,6 @@ from Progress import Progress
 import pandas as pd
 import numpy as np
 import datetime
-import calendar as cd
 import threading
 
 __author__ = 'marcio'
@@ -49,38 +48,17 @@ class Growth:
             dts[sigma] = sigma
         return dts
 
-    @staticmethod
-    def add_months(date_, sigma):
-        month = date_.month - 1 + sigma
-        year = int(date_.year + month / 12)
-        month = month % 12 + 1
-        day = min(date_.day, cd.monthrange(year, month)[1])
-        return datetime.date(year, month, day)
-
-    def period_avg(self, bb, date_, dt, index):
-        try:
-            date1 = date_
-            date2 = self.add_months(date_, dt)
-            table = self.input[index][['price']][(self.input[index]['bb'] == bb) & (
-                    self.input[index]['date'] >= date1) & (self.input[index]['date'] <= date2)].values
-            if len(table):
-                return np.average(table)
-            else:
-                return 0
-        except ValueError:
-            pass
-
     def make_time_series(self, bb, sigma, index):
-        series = []
-        date_ = self.datestart
-        dt = self.dts[sigma]
-        i = 1
-        while date_ < self.datefinal:
-            avg = self.period_avg(bb, date_, dt, index)
-            if avg > 0:
-                series.append([i, avg])
-            date_ = self.add_months(date_, dt)
-            i += 1
+        table = self.input[index][['price', 'date']][(self.input[index]['bb'] == bb)].values
+        dst = {}
+        for t in table:
+            d = ((t[1].year-self.datestart.year)*12+(t[1].month-self.datestart.month)) / sigma
+            if d in dst.keys():
+                dst[d].append(t[0])
+            else:
+                dst[d] = [t[0]]
+        keys = np.sort(dst.keys())
+        series = [[key, np.average(dst[key])]for key in keys]
         return series
 
     def mount_table(self, bbs, sigma, index):
