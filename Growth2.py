@@ -56,7 +56,7 @@ class Growth:
         while bbl == ipt[0]:
             self.ts[index] += 1
 
-        series = [[key, np.average(dst[key])] for key in keys]
+        series = []
         return series
 
     def mount_table(self, bbls, sigma, index):
