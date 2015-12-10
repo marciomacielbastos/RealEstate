@@ -51,6 +51,8 @@ class Growth2:
                 dst[su] = [(ipt[2], ipt[3])]
             if self.ts[index] < len(self.input):
                 ipt = self.input[self.ts[index]]
+            else:
+                break
         series = [[key, dst[key]] for key in dst.keys()]
         return series
 
@@ -74,8 +76,6 @@ class Growth2:
                 offset -= 1
         for i in xrange(begin, end):
             self.input[i] = (self.fix(self.input[i][0], 0), self.input[i][1], self.input[i][2], self.fix(self.input[i][3], 3))
-            bola= 2
-
 
     def mount_table(self, bbls, index):
         self.preprocess(index)
@@ -85,7 +85,6 @@ class Growth2:
             bbl = bbls.pop(0)
             time_series.append([bbl, self.make_time_series(bbl, index)])
         self.ts[index] = time_series
-        print "terminou ",index
 
     def get_avg_ts(self):
         bbls = self.get_bbls()
@@ -107,10 +106,8 @@ class Growth2:
         for i in xrange(len(t)):
             t[i].start()
         for i in xrange(len(t)):
-            print "quase"
             t[i].join()
         time_series = []
-        print "quase"
         for ts in self.ts:
             time_series += ts
         return time_series
@@ -118,3 +115,4 @@ class Growth2:
     def growth(self, kernels=1):
         self.kernels = kernels
         CsvManager.append(self.get_avg_ts(), self.output)
+
