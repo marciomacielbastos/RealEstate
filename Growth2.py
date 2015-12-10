@@ -1,7 +1,6 @@
 from CsvManager import CsvManager
 from ErrorLog import ErrorLog
 from Progress import Progress
-import pandas as pd
 import numpy as np
 import datetime
 import threading
@@ -10,14 +9,12 @@ __author__ = 'marcio'
 
 
 class Growth:
-    def __init__(self, inputdata, outputdata, path, dt, qnt):
-        self.error_log = ErrorLog(self.__class__.__name__)
-        self.progress = Progress()
+    def __init__(self, inputdata, outputdata, path):
         self.path = path
         self.input = CsvManager.read(inputdata)
         self.output = outputdata
-        self.dts = self.set_dts(dt, qnt)
         self.ts = []
+        self.kernels = 1
 
     def get_bbls(self):
         bbls_temp = CsvManager.read(self.path)
@@ -41,51 +38,70 @@ class Growth:
             index -= 1
         return index+1
 
-
-    @staticmethod
-    def set_dts(dt, qnt):
-        dts = {}
-        for i in xrange(qnt):
-            sigma = i + 1
-            sigma *= dt
-            dts[sigma] = sigma
-        return dts
-
-    def make_time_series(self, bbl, sigma, index):
+    def make_time_series(self, bbl, index):
         ipt = self.input[self.ts[index]]
+        dst = {}
         while bbl == ipt[0]:
             self.ts[index] += 1
-
-        series = [[key, np.average(dst[key])] for key in keys]
+            su = ipt[1].strip().lower()
+            if su in dst.keys():
+                dst[su].append((ipt[2], ipt[3]))
+            else:
+                dst[su] = [(ipt[2], ipt[3])]
+        series = [[key, dst[key]] for key in dst.keys()]
         return series
 
-    def mount_table(self, bbls, sigma, index):
+    @staticmethod
+    def fix(val, index):
+        if index == 0:
+            return int(val)
+        if index == 3:
+            return float(val)
+
+    def preprocess(self, index):
+        period = len(self.input) / self.kernels
+        offset = len(self.input) % self.kernels
+
+        pass
+
+    def mount_table(self, bbls, index):
         time_series = []
         self.ts[index] = len(self.input)-1
         self.ts[index] = self.binary_search(bbls[len(bbls)-1], 0, self.ts[index])
         while bbls:
             bbl = bbls.pop(0)
-            time_series.append([bbl, self.make_time_series(bbl, sigma, index)])
+            time_series.append([bbl, self.make_time_series(bbl, index)])
         self.ts[index] = time_series
 
-    def get_avg_ts(self, sigma, kernels):
+    def get_avg_ts(self):
         bbls = self.get_bbls()
-        begin = 0
-        end = len(bbls) / kernels
+        offset = len(bbls) % self.kernels
+        if offset:
+            period = (len(bbls) / self.kernels)
+        else:
+            period = len(bbls) / self.kernels
+        end = 0
         t = []
-        for i in xrange(kernels):
+        for i in xrange(self.kernels):
             self.ts.append([])
-            bblsk = bbls[begin:end]
-            t.append(threading.Thread(target=self.mount_table, args=(bblsk, sigma, i)))
             begin = end
-            end += end
+            end += period
+            if offset:
+                end += 1
+                offset -= 1
+            bblsk = bbls[begin:end]
+            t.append(threading.Thread(target=self.mount_table, args=(bblsk, i)))
+            if end > len(bbls):
+                end = len(bbls)
         for i in xrange(len(t)):
             t[i].start()
         for i in xrange(len(t)):
             t[i].join()
-
-        time_series = self.ts[0] + self.ts[1] + self.ts[2]
+        time_series = []
+        for ts in self.ts:
+            time_series += ts
         return time_series
 
-    def growth(self, sigma):
-        CsvManager.append(self.get_avg_ts(sigma), self.output)
+    def growth(self, kernels=1):
+        self.kernels = kernels
+        CsvManager.append(self.get_avg_ts(), self.output)
